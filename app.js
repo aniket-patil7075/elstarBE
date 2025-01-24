@@ -25,8 +25,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use(process.env.LOCAL_URL, routes);
-app.use(process.env.LOCAL_URL, dealerRoutes);
+app.use('/elstar-local', routes);
+app.use('/elstar-local', dealerRoutes);
 
 // app.get('*', (req, res) => {
 //     res.sendFile(path.join(__dirname + '/build/index.html'));
@@ -34,4 +34,8 @@ app.use(process.env.LOCAL_URL, dealerRoutes);
 
 app.use(require('./middleware/error'));
 
-app.listen(process.env.PORT, console.log("Listening on port 8080"));
+const port = process.env.PORT || 1024;
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

@@ -15,6 +15,9 @@ const path = require("path");
 const fs = require("fs");
 const VehicleSchema = require("../model/dealerModels/Lists/VehicleSchema");
 const { default: mongoose } = require("mongoose");
+const FeesSchema = require("../model/dealerModels/Lists/FeesSchema");
+const appointmentSchema = require("../model/dealerModels/appointmentSchema");
+const CustomerSchema = require("../model/dealerModels/Lists/CustomerSchema");
 
 // Configure Multer to save images
 const storage = multer.diskStorage({
@@ -196,13 +199,6 @@ exports.dealerAddNewCustomer = catchAsyncError(async (req, res, next) => {
     lastName,
     phoneNumber,
     email,
-    // preferredContactMethod,
-    // tags,
-    // note,
-    // referralSource,
-    // company,
-    // fleet,
-    // paymentTerms,
     customerAddress,
     zipCode,
   } = req.body;
@@ -215,13 +211,6 @@ exports.dealerAddNewCustomer = catchAsyncError(async (req, res, next) => {
     lastName: lastName,
     phoneNumber: phoneNumber,
     email: email,
-    // preferredContactMethod:preferredContactMethod,
-    // tags:tags,
-    // note:note,
-    // referralSource:referralSource,
-    // company:company,
-    // fleet:fleet,
-    // paymentTerms:paymentTerms,
     customerAddress: customerAddress,
     zipCode: zipCode,
   });
@@ -245,13 +234,15 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       year,
       make,
       model,
+      customerName,
+      customerId,
       subModel,
       transmission,
       engineSize,
       driveTrain,
       type,
       mileage,
-      licencePlate, // Array of { regionCode, plateNumber }
+      licencePlate, 
       unit,
       vin,
       color,
@@ -266,11 +257,12 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       imageName = req.file.filename; // Only save the image name
     }
 
-    // Create a new vehicle document
     const vehicle = await VehicleSchema.create({
       image: imageName,
       year,
       make,
+      customerName,
+      customerId,
       model,
       subModel,
       transmission,
@@ -287,7 +279,7 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       tags,
     });
 
-    // Respond to client
+    console.log("New Vehicle : ", vehicle)
     res.status(201).json({
       status: "success",
       data: vehicle,
@@ -597,6 +589,7 @@ exports.dealerGetAllCategories = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerAddNewFees = catchAsyncError(async (req, res, next) => {
+  console.log('Request Body:', req.body);
   const fees = await dealerFeesSchema.create(req.body);
 
   // Send back the response
@@ -911,5 +904,182 @@ exports.recordEstimatePayment = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "Payment recorded successfully",
     estimate,
+  });
+});
+
+exports.deletePart = async (req, res) => {
+  const { id } = req.params;
+  try {
+      const part = await dealerPartsSchema.findByIdAndDelete(id);
+
+      if (!part) {
+          return res.status(404).json({
+              message: 'part not found',
+          });
+      }
+
+      return res.status(200).json({
+          message: 'part deleted successfully',
+          data: part,
+      });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+          message: 'Error in deleting part',
+          error: error.message,
+      });
+  }
+};
+
+exports.deleteTire = async (req, res) => {
+  const { id } = req.params;
+  console.log("Delete Tire Id : ",id)
+  try {
+      const tire = await dealerTiresSchema.findByIdAndDelete(id);
+
+      if (!tire) {
+          return res.status(404).json({
+              message: 'Tire not found',
+          });
+      }
+
+      return res.status(200).json({
+          message: 'Tire deleted successfully',
+          data: tire,
+      });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+          message: 'Error in deleting Tire',
+          error: error.message,
+      });
+  }
+};
+
+exports.deleteFee = async (req, res) => {
+  const { id } = req.params;
+  console.log("Delete Fee Id : ",id)
+  try {
+      const fee = await FeesSchema.findByIdAndDelete(id);
+
+      if (!fee) {
+          return res.status(404).json({
+              message: 'Fee not found',
+          });
+      }
+
+      return res.status(200).json({
+          message: 'Fee deleted successfully',
+          data: tire,
+      });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+          message: 'Error in deleting Fee',
+          error: error.message,
+      });
+  }
+};
+
+
+exports.addNewAppointment = catchAsyncError(async (req, res, next) => {
+  const {
+    
+    customerId,    
+    start,         
+    end,           
+    title,         
+    note,          
+    eventColor,    
+    sendConfirmation, 
+    sendReminder,  
+    vehicleId,
+    status  
+  } = req.body;
+
+  console.log(req.body);
+
+  const appointment = await appointmentSchema.create({
+     customerId,
+     start,
+     end,
+     title,
+    note,
+    eventColor,
+    sendConfirmation,
+    sendReminder,
+    vehicleId,
+    status
+  });
+
+  // Send back a successful response with the newly created appointment
+  res.status(201).json({
+    status: "success",
+    data: {
+      appointment,
+    },
+  });
+});
+
+exports.dealerGetAllAppointment = catchAsyncError(async (req, res, next) => {
+  console.log(req.body);
+  const allAppointment = await appointmentSchema.find();
+
+  res.status(200).json({
+    status: "success",
+    allAppointment,
+  });
+});
+
+exports.updateAppointment = catchAsyncError(async (req, res, next) => {
+  const { 
+    customerId, 
+    start, 
+    end, 
+    title, 
+    note, 
+    eventColor, 
+    sendConfirmation, 
+    sendReminder, 
+    vehicleId, 
+    status 
+  } = req.body;
+
+  const { id } = req.params; // Extract appointment ID from the request parameters
+
+  console.log(`Updating appointment with ID: ${id}`);
+  console.log(req.body);
+
+  // Find the appointment by ID and update it
+  const appointment = await appointmentSchema.findByIdAndUpdate(
+    id,
+    {
+      customerId,
+      start,
+      end,
+      title,
+      note,
+      eventColor,
+      sendConfirmation,
+      sendReminder,
+      vehicleId,
+      status,
+    },
+    { new: true, runValidators: true } // Return the updated document and run validation
+  );
+
+  if (!appointment) {
+    return res.status(404).json({
+      status: "fail",
+      message: "Appointment not found",
+    });
+  }
+
+  // Send back a successful response with the updated appointment
+  res.status(200).json({
+    status: "success",
+    data: {
+      appointment,
+    },
   });
 });
