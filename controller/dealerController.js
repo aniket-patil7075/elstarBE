@@ -233,9 +233,8 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
     const {
       year,
       make,
-      model,
-      customerName,
       customerId,
+      model,
       subModel,
       transmission,
       engineSize,
@@ -261,7 +260,6 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       image: imageName,
       year,
       make,
-      customerName,
       customerId,
       model,
       subModel,
@@ -509,13 +507,25 @@ exports.dealerGetAllVehiclesByPage = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerGetAllVehicles = catchAsyncError(async (req, res, next) => {
-  const allVehicles = await DealerVehicleSchema.find();
+  const { customerId } = req.query; // Assuming the customerId is passed in the query
+  console.log(customerId)
+
+  let allVehicles;
+
+  if (customerId) {
+    // If customerId is provided, find vehicles specific to that customer
+    allVehicles = await DealerVehicleSchema.find({ customerId });
+  } else {
+    // If no customerId is provided, return all vehicles
+    allVehicles = await DealerVehicleSchema.find();
+  }
 
   res.status(200).json({
     status: "success",
     allVehicles,
   });
 });
+
 
 exports.dealerAddNewBrand = catchAsyncError(async (req, res, next) => {
   const { brandName } = req.body;

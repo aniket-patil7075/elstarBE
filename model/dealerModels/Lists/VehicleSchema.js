@@ -19,15 +19,9 @@ const dealerVehiclesSchema = new mongoose.Schema({
         trim: true,
         maxlength: [30, "Make must be less than 30 characters long"],
     },
-    customerName: {
-        type: String,
-        required: [true, "customerName is required"],
-        trim: true,
-        maxlength: [30, "customerName must be less than 30 characters long"],
-    },
     customerId: {
         type: String,
-        required: [true, "customerId is required"],
+        // required: [true, "customerId is required"],
         trim: true,
         maxlength: [30, "customerId must be less than 30 characters long"],
     },
