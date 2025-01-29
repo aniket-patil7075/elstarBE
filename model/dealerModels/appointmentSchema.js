@@ -27,7 +27,7 @@ const appointmentSchema = new mongoose.Schema({
     },
     eventColor: {
         type: String,
-        enum: ['blue', 'green', 'red', 'yellow', 'purple', 'orange'], // Example color options
+        enum: ['blue', 'green', 'red', 'yellow', 'purple', 'orange'], 
         required: [true, "Event color is required"]
     },
     sendConfirmation: {
@@ -40,7 +40,7 @@ const appointmentSchema = new mongoose.Schema({
     },
     vehicleId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'DealerVehicle', // Assuming DealerVehicle model exists
+        ref: 'DealerVehicle', 
         required: [true, "Vehicle is required"]
     },
     status: {
@@ -49,7 +49,7 @@ const appointmentSchema = new mongoose.Schema({
         default: "shifted"
     }
 }, {
-    timestamps: true // Automatically adds createdAt and updatedAt fields
+    timestamps: true 
 });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);
