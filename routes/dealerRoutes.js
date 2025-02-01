@@ -1,5 +1,5 @@
 const { sendEmailToUser } = require('../controller/controller');
-const { dealerAddNewPart, dealerAddNewCustomer, dealerGetAllParts, dealerGetAllCustomers, dealerAddNewBrand, dealerGetAllcategory, dealerAddNewVendor, dealerGetAllVendors, dealerAddNewCategory, dealerGetAllCategories, dealerGetAllBrands, dealerAddNewVehicle, dealerGetAllvehicles, dealerGetAllVehicles, dealerAddNewEstimate, dealerAddNewFees, dealerGetAllFees, createBlankEstimate, dealerGetAllPartsByPage, dealerGetAllVehiclesByPage, dealerGetAllCustomersByPage, dealerAddNewTire, dealerGetAllTires, dealerGetAllTiresByPage, updateEstimate, dealerGetAllEstimates, getEstimateById, getAllEstimatesByPage, updateOrderStatus, updateEstimateDates, authorizeEstimateServices, recordEstimatePayment, deletePart, deleteTire, deleteFee, addNewAppointment, dealerGetAllAppointment, updateAppointment } = require('../controller/dealerController');
+const { dealerAddNewPart, dealerAddNewCustomer, dealerGetAllParts, dealerGetAllCustomers, dealerAddNewBrand, dealerGetAllcategory, dealerAddNewVendor, dealerGetAllVendors, dealerAddNewCategory, dealerGetAllCategories, dealerGetAllBrands, dealerAddNewVehicle, dealerGetAllvehicles, dealerGetAllVehicles, dealerAddNewEstimate, dealerAddNewFees, dealerGetAllFees, createBlankEstimate, dealerGetAllPartsByPage, dealerGetAllVehiclesByPage, dealerGetAllCustomersByPage, dealerAddNewTire, dealerGetAllTires, dealerGetAllTiresByPage, updateEstimate, dealerGetAllEstimates, getEstimateById, getAllEstimatesByPage, updateOrderStatus, updateEstimateDates, authorizeEstimateServices, recordEstimatePayment, deletePart, deleteTire, deleteFee, addNewAppointment, dealerGetAllAppointment, updateAppointment, stripePayment } = require('../controller/dealerController');
 const router = require('./routes');
 
 const prefix = '/elstar-local';
@@ -346,9 +346,7 @@ router.route('/dealer/delete-fee/:id').post(deleteFee);
 router.route('/dealer/add-new-appointment').post(addNewAppointment)
 router.route('/dealer/get-all-appointment').get(dealerGetAllAppointment)
 
-router.route('/dealer/update-appointment/:id').put(updateAppointment
-    
-)
-
+router.route('/dealer/update-appointment/:id').put(updateAppointment)
+router.route('/create-checkout-session').post(stripePayment)
 
 module.exports = dealerRoutes;

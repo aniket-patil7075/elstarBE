@@ -67,6 +67,11 @@ const dealerEstimateSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         default: ''
     },
+    paymentMethod: {
+        type: String,
+        enum: ['cash', 'card', 'mobile'],
+        required: true
+    },
     paymentNote: {
         type: mongoose.Schema.Types.Mixed,
         default: ''

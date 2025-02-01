@@ -7,7 +7,7 @@ const app = express();
 const path = require('path')
 //require cors
 const cors = require('cors');
-
+const stripe = require('stripe')('sk_test_tR3PYbcVNZZ796tH88S4VQ2u');
 //require routes
 const routes = require('./routes/routes.js');
 const cookieParser = require('cookie-parser');
@@ -33,6 +33,28 @@ app.use('/elstar-local', dealerRoutes);
 // });
 
 app.use(require('./middleware/error'));
+
+app.get('/create-checkout-session', async (req, res) => {
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'T-shirt',
+          },
+          unit_amount: 2000,
+        },
+        quantity: 1,
+      },
+    ],
+    mode: 'payment',
+    success_url: `http://localhost:3000/?success=true`,
+    cancel_url: `http://localhost:3000/?canceled=true`,
+});
+
+  res.redirect(303, session.url);
+});
 
 const port = process.env.PORT || 1024;
 

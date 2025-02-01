@@ -18,7 +18,7 @@ const { default: mongoose } = require("mongoose");
 const FeesSchema = require("../model/dealerModels/Lists/FeesSchema");
 const appointmentSchema = require("../model/dealerModels/appointmentSchema");
 const CustomerSchema = require("../model/dealerModels/Lists/CustomerSchema");
-
+const stripe = require('stripe')('sk_test_tR3PYbcVNZZ796tH88S4VQ2u');
 // Configure Multer to save images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -894,27 +894,32 @@ exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
 });
 
 exports.recordEstimatePayment = catchAsyncError(async (req, res, next) => {
-  const { estimateId, amount, date, note } = req.body;
-
-  const estimate = await estimateSchema.findByIdAndUpdate(
-    estimateId, // The ID of the estimate to update
-    {
-      $set: {
-        status: 'Dropped Off',
-        isPaymentReceived: true,
-        paymentDate: date,
-        paymentNote: note
-      }
-    }, // Fields to update
-    { new: true }
-  );
-
-  // Respond with the saved file URL or path
-  return res.status(200).json({
-    success: true,
-    message: "Payment recorded successfully",
-    estimate,
-  });
+  const { estimateId,totalDue, amount, date, note,paymentMethod } = req.body;
+  console.log(req.body);
+  try {
+    const estimate = await estimateSchema.findByIdAndUpdate(
+      estimateId, 
+      {
+        $set: {
+          status: 'Dropped Off',
+          isPaymentReceived: true,
+          grandTotal: totalDue,
+          paymentDate: date,
+          paymentNote: note,
+          paymentMethod : paymentMethod
+        }
+      },
+      { new: true }
+    );
+  
+    return res.status(200).json({
+      success: true,
+      message: "Payment recorded successfully",
+      estimate,
+    });
+  } catch (error) {
+    console.log(error)
+  }
 });
 
 exports.deletePart = async (req, res) => {
@@ -1092,4 +1097,28 @@ exports.updateAppointment = catchAsyncError(async (req, res, next) => {
       appointment,
     },
   });
+});
+
+exports.stripePayment = catchAsyncError(async (req, res) => {
+
+  const session = await stripe.checkout.sessions.create({
+    ui_mode: 'embedded',
+    line_items: [
+       {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'T-shirt',
+          },
+          unit_amount: 2000,
+        },
+        quantity: 1,
+      },
+    ],
+    mode: 'payment',
+    return_url: `http://localhost:5173/return?session_id={CHECKOUT_SESSION_ID}`,
+   
+});
+
+res.send({clientSecret: session.client_secret});
 });
