@@ -34,7 +34,7 @@ app.use('/elstar-local', dealerRoutes);
 
 app.use(require('./middleware/error'));
 
-app.get('/create-checkout-session', async (req, res) => {
+app.post('/elstar-local/create-checkout-session', async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {

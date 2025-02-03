@@ -18,7 +18,7 @@ const { default: mongoose } = require("mongoose");
 const FeesSchema = require("../model/dealerModels/Lists/FeesSchema");
 const appointmentSchema = require("../model/dealerModels/appointmentSchema");
 const CustomerSchema = require("../model/dealerModels/Lists/CustomerSchema");
-const stripe = require('stripe')('sk_test_tR3PYbcVNZZ796tH88S4VQ2u');
+const stripe = require('stripe')('sk_test_51QcTfE2LkEUwrBDR8lgQu5QSkf6WksOqU4iYVjn8ZHw993njjib7YYkebhdQjwCEONYbhfv3m8IeMTuY2GRTU5Ho00w3KGiRA4');
 // Configure Multer to save images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -711,9 +711,8 @@ exports.getAllEstimatesByPage = catchAsyncError(async (req, res, next) => {
 
   const totalEstimates = await estimateSchema.countDocuments();
 
-  const sortOptions = sort ? { [sort]: 1 } : {}; // Sorting in ascending order if provided
+  const sortOptions = sort ? { [sort]: 1 } : {}; 
 
-  // Fetch paginated and sorted customers
   const allEstimates = await estimateSchema
     .find()
     .populate({
@@ -894,7 +893,7 @@ exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
 });
 
 exports.recordEstimatePayment = catchAsyncError(async (req, res, next) => {
-  const { estimateId,totalDue, amount, date, note,paymentMethod } = req.body;
+  const { estimateId,totalDue, date,remainingAmount, note,paymentMethod } = req.body;
   console.log(req.body);
   try {
     const estimate = await estimateSchema.findByIdAndUpdate(
@@ -903,7 +902,7 @@ exports.recordEstimatePayment = catchAsyncError(async (req, res, next) => {
         $set: {
           status: 'Dropped Off',
           isPaymentReceived: true,
-          grandTotal: totalDue,
+          grandTotal: remainingAmount,
           paymentDate: date,
           paymentNote: note,
           paymentMethod : paymentMethod
@@ -1080,7 +1079,7 @@ exports.updateAppointment = catchAsyncError(async (req, res, next) => {
       vehicleId,
       status,
     },
-    { new: true, runValidators: true } // Return the updated document and run validation
+    { new: true, runValidators: true }  
   );
 
   if (!appointment) {
@@ -1090,7 +1089,6 @@ exports.updateAppointment = catchAsyncError(async (req, res, next) => {
     });
   }
 
-  // Send back a successful response with the updated appointment
   res.status(200).json({
     status: "success",
     data: {
@@ -1100,25 +1098,47 @@ exports.updateAppointment = catchAsyncError(async (req, res, next) => {
 });
 
 exports.stripePayment = catchAsyncError(async (req, res) => {
-
+  console.log(req.body);
+  const {amount , orderNo} = req.body;
+  const mainAmount = amount*100;
+  
   const session = await stripe.checkout.sessions.create({
     ui_mode: 'embedded',
+    payment_method_types: ['card'],
     line_items: [
-       {
+      {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: 'T-shirt',
+            name: `Order #${orderNo}`,
           },
-          unit_amount: 2000,
+          unit_amount: mainAmount,
         },
         quantity: 1,
       },
     ],
     mode: 'payment',
-    return_url: `http://localhost:5173/return?session_id={CHECKOUT_SESSION_ID}`,
-   
+    return_url: `http://localhost:5173/return?session_id={CHECKOUT_SESSION_ID}`, // Fix return URL
+  });
+
+
+  res.json({ clientSecret: session.client_secret });
 });
 
-res.send({clientSecret: session.client_secret});
+exports.getStripePayment = catchAsyncError(async (req, res) => {
+  
+  try {
+    const session = await stripe.checkout.sessions.retrieve(req.query.session_id); 
+    console.log(session)
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+    res.json({
+      status: session.payment_status, 
+    });
+  } catch (error) {
+    console.error("Error retrieving session:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
