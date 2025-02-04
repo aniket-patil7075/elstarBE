@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const dealerEstimateSchema = new mongoose.Schema({
     orderNo: {
-        type: mongoose.Schema.Types.Mixed,
+        type: Number,
         trim: true,
         default: 0
     },
@@ -32,6 +32,10 @@ const dealerEstimateSchema = new mongoose.Schema({
         default: ''
     },
     grandTotal: {
+        type: mongoose.Schema.Types.Mixed,
+        default: 0
+    },
+    remainingAmount: {
         type: mongoose.Schema.Types.Mixed,
         default: 0
     },

@@ -1,5 +1,5 @@
 const { sendEmailToUser } = require('../controller/controller');
-const { dealerAddNewPart, dealerAddNewCustomer, dealerGetAllParts, dealerGetAllCustomers, dealerAddNewBrand, dealerGetAllcategory, dealerAddNewVendor, dealerGetAllVendors, dealerAddNewCategory, dealerGetAllCategories, dealerGetAllBrands, dealerAddNewVehicle, dealerGetAllvehicles, dealerGetAllVehicles, dealerAddNewEstimate, dealerAddNewFees, dealerGetAllFees, createBlankEstimate, dealerGetAllPartsByPage, dealerGetAllVehiclesByPage, dealerGetAllCustomersByPage, dealerAddNewTire, dealerGetAllTires, dealerGetAllTiresByPage, updateEstimate, dealerGetAllEstimates, getEstimateById, getAllEstimatesByPage, updateOrderStatus, updateEstimateDates, authorizeEstimateServices, recordEstimatePayment, deletePart, deleteTire, deleteFee, addNewAppointment, dealerGetAllAppointment, updateAppointment, stripePayment, getStripePayment } = require('../controller/dealerController');
+const { dealerAddNewPart, dealerAddNewCustomer, dealerGetAllParts, dealerGetAllCustomers, dealerAddNewBrand, dealerGetAllcategory, dealerAddNewVendor, dealerGetAllVendors, dealerAddNewCategory, dealerGetAllCategories, dealerGetAllBrands, dealerAddNewVehicle, dealerGetAllvehicles, dealerGetAllVehicles, dealerAddNewEstimate, dealerAddNewFees, dealerGetAllFees, createBlankEstimate, dealerGetAllPartsByPage, dealerGetAllVehiclesByPage, dealerGetAllCustomersByPage, dealerAddNewTire, dealerGetAllTires, dealerGetAllTiresByPage, updateEstimate, dealerGetAllEstimates, getEstimateById, getAllEstimatesByPage, updateOrderStatus, updateEstimateDates, authorizeEstimateServices, recordEstimatePayment, deletePart, deleteTire, deleteFee, addNewAppointment, dealerGetAllAppointment, updateAppointment, stripePayment, getStripePayment, updateCustomerRemainingAmount } = require('../controller/dealerController');
 const router = require('./routes');
 
 const prefix = '/elstar-local';
@@ -345,9 +345,9 @@ router.route('/dealer/delete-tire/:id').post(deleteTire);
 router.route('/dealer/delete-fee/:id').post(deleteFee);
 router.route('/dealer/add-new-appointment').post(addNewAppointment)
 router.route('/dealer/get-all-appointment').get(dealerGetAllAppointment)
-
 router.route('/dealer/update-appointment/:id').put(updateAppointment)
 router.route('/create-checkout-session').post(stripePayment)
 router.route('/session-status').get(getStripePayment)
+router.route('/update-customer-remaining').put(updateCustomerRemainingAmount)
 
 module.exports = dealerRoutes;

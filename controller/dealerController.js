@@ -18,7 +18,9 @@ const { default: mongoose } = require("mongoose");
 const FeesSchema = require("../model/dealerModels/Lists/FeesSchema");
 const appointmentSchema = require("../model/dealerModels/appointmentSchema");
 const CustomerSchema = require("../model/dealerModels/Lists/CustomerSchema");
-const stripe = require('stripe')('sk_test_51QcTfE2LkEUwrBDR8lgQu5QSkf6WksOqU4iYVjn8ZHw993njjib7YYkebhdQjwCEONYbhfv3m8IeMTuY2GRTU5Ho00w3KGiRA4');
+const stripe = require("stripe")(
+  "sk_test_51QcTfE2LkEUwrBDR8lgQu5QSkf6WksOqU4iYVjn8ZHw993njjib7YYkebhdQjwCEONYbhfv3m8IeMTuY2GRTU5Ho00w3KGiRA4"
+);
 // Configure Multer to save images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -194,14 +196,8 @@ exports.dealerAddNewTire = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerAddNewCustomer = catchAsyncError(async (req, res, next) => {
-  const {
-    firstName,
-    lastName,
-    phoneNumber,
-    email,
-    customerAddress,
-    zipCode,
-  } = req.body;
+  const { firstName, lastName, phoneNumber, email, customerAddress, zipCode } =
+    req.body;
 
   console.log(req.body);
 
@@ -241,7 +237,7 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       driveTrain,
       type,
       mileage,
-      licencePlate, 
+      licencePlate,
       unit,
       vin,
       color,
@@ -277,7 +273,7 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       tags,
     });
 
-    console.log("New Vehicle : ", vehicle)
+    console.log("New Vehicle : ", vehicle);
     res.status(201).json({
       status: "success",
       data: vehicle,
@@ -508,7 +504,7 @@ exports.dealerGetAllVehiclesByPage = catchAsyncError(async (req, res, next) => {
 
 exports.dealerGetAllVehicles = catchAsyncError(async (req, res, next) => {
   const { customerId } = req.query; // Assuming the customerId is passed in the query
-  console.log(customerId)
+  console.log(customerId);
 
   let allVehicles;
 
@@ -525,7 +521,6 @@ exports.dealerGetAllVehicles = catchAsyncError(async (req, res, next) => {
     allVehicles,
   });
 });
-
 
 exports.dealerAddNewBrand = catchAsyncError(async (req, res, next) => {
   const { brandName } = req.body;
@@ -599,7 +594,7 @@ exports.dealerGetAllCategories = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerAddNewFees = catchAsyncError(async (req, res, next) => {
-  console.log('Request Body:', req.body);
+  console.log("Request Body:", req.body);
   const fees = await dealerFeesSchema.create(req.body);
 
   // Send back the response
@@ -711,7 +706,7 @@ exports.getAllEstimatesByPage = catchAsyncError(async (req, res, next) => {
 
   const totalEstimates = await estimateSchema.countDocuments();
 
-  const sortOptions = sort ? { [sort]: 1 } : {}; 
+  const sortOptions = sort ? { [sort]: 1 } : {};
 
   const allEstimates = await estimateSchema
     .find()
@@ -788,7 +783,7 @@ exports.updateEstimateDates = catchAsyncError(async (req, res, next) => {
   const { id } = req.params; // Get the estimate ID from the request URL
   const { type } = req.body; // Get the new status from the request body
 
-  if (type === 'complete') {
+  if (type === "complete") {
     const { completedDate, completedTime } = req.body; // Get the new status from the request body
 
     const estimate = await estimateSchema.findByIdAndUpdate(
@@ -801,7 +796,7 @@ exports.updateEstimateDates = catchAsyncError(async (req, res, next) => {
       message: "Completed Date & Time updated successfully",
       estimate,
     });
-  } else if (type === 'due') {
+  } else if (type === "due") {
     const { dueDate, dueTime } = req.body; // Get the new status from the request body
     const estimate = await estimateSchema.findByIdAndUpdate(
       id,
@@ -873,7 +868,7 @@ exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
 
   const updatedEstimateStatus = await estimateSchema.findByIdAndUpdate(
     estimateId, // The ID of the estimate to update
-    { $set: { status: 'In Progress' } }, // Fields to update
+    { $set: { status: "In Progress" } }, // Fields to update
     { new: true }
   );
 
@@ -893,137 +888,162 @@ exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
 });
 
 exports.recordEstimatePayment = catchAsyncError(async (req, res, next) => {
-  const { estimateId,totalDue, date,remainingAmount, note,paymentMethod } = req.body;
+  const {
+    estimateId,
+    totalDue,
+    date,
+    remainingAmount,
+    enteredAmount,
+    note,
+    paymentMethod,
+  } = req.body;
   console.log(req.body);
+
   try {
-    const estimate = await estimateSchema.findByIdAndUpdate(
-      estimateId, 
+    // Fetch the existing estimate
+    const estimate = await estimateSchema.findById(estimateId);
+
+    if (!estimate) {
+      return res.status(404).json({
+        success: false,
+        message: "Estimate not found",
+      });
+    }
+
+    const prevGrandTotal = estimate.grandTotal || 0;
+
+    // Update the estimate with the new grandTotal and other fields
+    const updatedEstimate = await estimateSchema.findByIdAndUpdate(
+      estimateId,
       {
         $set: {
-          status: 'Dropped Off',
+          status: "Dropped Off",
           isPaymentReceived: true,
-          grandTotal: remainingAmount,
+          grandTotal: enteredAmount,
+          remainingAmount: remainingAmount,
           paymentDate: date,
           paymentNote: note,
-          paymentMethod : paymentMethod
-        }
+          paymentMethod: paymentMethod,
+        },
       },
       { new: true }
     );
-  
+
     return res.status(200).json({
       success: true,
       message: "Payment recorded successfully",
-      estimate,
+      estimate: updatedEstimate,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 });
 
 exports.deletePart = async (req, res) => {
   const { id } = req.params;
   try {
-      const part = await dealerPartsSchema.findByIdAndDelete(id);
+    const part = await dealerPartsSchema.findByIdAndDelete(id);
 
-      if (!part) {
-          return res.status(404).json({
-              message: 'part not found',
-          });
-      }
-
-      return res.status(200).json({
-          message: 'part deleted successfully',
-          data: part,
+    if (!part) {
+      return res.status(404).json({
+        message: "part not found",
       });
+    }
+
+    return res.status(200).json({
+      message: "part deleted successfully",
+      data: part,
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-          message: 'Error in deleting part',
-          error: error.message,
-      });
+    console.error(error);
+    return res.status(500).json({
+      message: "Error in deleting part",
+      error: error.message,
+    });
   }
 };
 
 exports.deleteTire = async (req, res) => {
   const { id } = req.params;
-  console.log("Delete Tire Id : ",id)
+  console.log("Delete Tire Id : ", id);
   try {
-      const tire = await dealerTiresSchema.findByIdAndDelete(id);
+    const tire = await dealerTiresSchema.findByIdAndDelete(id);
 
-      if (!tire) {
-          return res.status(404).json({
-              message: 'Tire not found',
-          });
-      }
-
-      return res.status(200).json({
-          message: 'Tire deleted successfully',
-          data: tire,
+    if (!tire) {
+      return res.status(404).json({
+        message: "Tire not found",
       });
+    }
+
+    return res.status(200).json({
+      message: "Tire deleted successfully",
+      data: tire,
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-          message: 'Error in deleting Tire',
-          error: error.message,
-      });
+    console.error(error);
+    return res.status(500).json({
+      message: "Error in deleting Tire",
+      error: error.message,
+    });
   }
 };
 
 exports.deleteFee = async (req, res) => {
   const { id } = req.params;
-  console.log("Delete Fee Id : ",id)
+  console.log("Delete Fee Id : ", id);
   try {
-      const fee = await FeesSchema.findByIdAndDelete(id);
+    const fee = await FeesSchema.findByIdAndDelete(id);
 
-      if (!fee) {
-          return res.status(404).json({
-              message: 'Fee not found',
-          });
-      }
-
-      return res.status(200).json({
-          message: 'Fee deleted successfully',
-          data: tire,
+    if (!fee) {
+      return res.status(404).json({
+        message: "Fee not found",
       });
+    }
+
+    return res.status(200).json({
+      message: "Fee deleted successfully",
+      data: tire,
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-          message: 'Error in deleting Fee',
-          error: error.message,
-      });
+    console.error(error);
+    return res.status(500).json({
+      message: "Error in deleting Fee",
+      error: error.message,
+    });
   }
 };
 
-
 exports.addNewAppointment = catchAsyncError(async (req, res, next) => {
   const {
-    
-    customerId,    
-    start,         
-    end,           
-    title,         
-    note,          
-    eventColor,    
-    sendConfirmation, 
-    sendReminder,  
-    vehicleId,
-    status  
-  } = req.body;
-
-  console.log(req.body);
-
-  const appointment = await appointmentSchema.create({
-     customerId,
-     start,
-     end,
-     title,
+    customerId,
+    start,
+    end,
+    title,
     note,
     eventColor,
     sendConfirmation,
     sendReminder,
     vehicleId,
-    status
+    status,
+  } = req.body;
+
+  console.log(req.body);
+
+  const appointment = await appointmentSchema.create({
+    customerId,
+    start,
+    end,
+    title,
+    note,
+    eventColor,
+    sendConfirmation,
+    sendReminder,
+    vehicleId,
+    status,
   });
 
   // Send back a successful response with the newly created appointment
@@ -1046,17 +1066,17 @@ exports.dealerGetAllAppointment = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updateAppointment = catchAsyncError(async (req, res, next) => {
-  const { 
-    customerId, 
-    start, 
-    end, 
-    title, 
-    note, 
-    eventColor, 
-    sendConfirmation, 
-    sendReminder, 
-    vehicleId, 
-    status 
+  const {
+    customerId,
+    start,
+    end,
+    title,
+    note,
+    eventColor,
+    sendConfirmation,
+    sendReminder,
+    vehicleId,
+    status,
   } = req.body;
 
   const { id } = req.params; // Extract appointment ID from the request parameters
@@ -1079,7 +1099,7 @@ exports.updateAppointment = catchAsyncError(async (req, res, next) => {
       vehicleId,
       status,
     },
-    { new: true, runValidators: true }  
+    { new: true, runValidators: true }
   );
 
   if (!appointment) {
@@ -1098,47 +1118,117 @@ exports.updateAppointment = catchAsyncError(async (req, res, next) => {
 });
 
 exports.stripePayment = catchAsyncError(async (req, res) => {
-  console.log(req.body);
-  const {amount , orderNo} = req.body;
-  const mainAmount = amount*100;
-  
+  const { amount, orderNo, formattedRemaining } = req.body;
+  const mainAmount = amount * 100;
+
   const session = await stripe.checkout.sessions.create({
-    ui_mode: 'embedded',
-    payment_method_types: ['card'],
+    ui_mode: "embedded",
+    payment_method_types: ["card"],
     line_items: [
       {
         price_data: {
-          currency: 'usd',
+          currency: "usd",
           product_data: {
-            name: `Order #${orderNo}`,
+            name: `${orderNo}`,
           },
           unit_amount: mainAmount,
         },
         quantity: 1,
       },
     ],
-    mode: 'payment',
+    mode: "payment",
     return_url: `http://localhost:5173/return?session_id={CHECKOUT_SESSION_ID}`, // Fix return URL
+    metadata: {
+      orderNo: orderNo,
+      formattedRemaining: formattedRemaining,
+    },
   });
-
 
   res.json({ clientSecret: session.client_secret });
 });
 
 exports.getStripePayment = catchAsyncError(async (req, res) => {
-  
   try {
-    const session = await stripe.checkout.sessions.retrieve(req.query.session_id); 
-    console.log(session)
+    const session = await stripe.checkout.sessions.retrieve(
+      req.query.session_id
+    );
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
-    res.json({
-      status: session.payment_status, 
-    });
+    const orderNo = session.metadata?.orderNo;
+    const customerRemaining = parseFloat(session.metadata?.formattedRemaining) || 0;
+    
+
+    if (session.payment_status === "paid") {
+      const dealerEstimate = await estimateSchema.findOne({ orderNo: orderNo });
+      
+
+      const customerId = dealerEstimate.customer.toString();
+
+      if (!dealerEstimate) {
+        return res.status(404).json({
+          error: "Dealer estimate not found for the given order number",
+        });
+      }
+
+      dealerEstimate.grandTotal = session.amount_total / 100;
+      await dealerEstimate.save();
+
+      const customer = await CustomerSchema.findById(customerId);
+      if (!customer) {
+        return res.status(404).json({
+          error: "Customer not found for the given customer ID",
+        });
+      }
+
+      customer.remainingAmount = customerRemaining;
+      await customer.save();
+
+      return res.json({
+        status: session.payment_status,
+        message: "Grand total updated successfully",
+        grandTotal: dealerEstimate.grandTotal,
+      });
+    }
+
+    return res.status(400).json({ error: "Payment not completed" });
   } catch (error) {
     console.error("Error retrieving session:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+exports.updateCustomerRemainingAmount = catchAsyncError(async (req, res) => {
+  try {
+    const { customerId, remainingAmount } = req.body;
+    console.log(req.body);
+    const customer = await DealerCustomerSchema.findByIdAndUpdate(customerId);
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+      });
+    }
+
+    // Calculate the new remainingAmount by adding the previous remainingAmount to the new remainingAmount
+    const prevRemainingAmount = customer.remainingAmount || 0; // In case remainingAmount is not set yet
+    const updatedRemainingAmount =  remainingAmount;
+
+    // Update the customer's remainingAmount
+    const updatedCustomer = await DealerCustomerSchema.findByIdAndUpdate(
+      customerId,
+      { remainingAmount: updatedRemainingAmount },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Customer remaining amount updated successfully",
+      customer: updatedCustomer,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
