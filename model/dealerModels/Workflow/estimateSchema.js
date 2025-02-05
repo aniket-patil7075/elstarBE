@@ -74,7 +74,7 @@ const dealerEstimateSchema = new mongoose.Schema({
     paymentMethod: {
         type: String,
         enum: ['cash', 'card', 'mobile'],
-        required: true
+        // required: true
     },
     paymentNote: {
         type: mongoose.Schema.Types.Mixed,
@@ -140,7 +140,7 @@ const dealerEstimateSchema = new mongoose.Schema({
                             default: 0
                         }
                     },
-                    subTotal: {
+                    subtotal: {
                         type: mongoose.Schema.Types.Mixed,
                         trim: true,
                         default: 0

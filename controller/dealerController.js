@@ -136,7 +136,7 @@ exports.dealerAddNewTire = catchAsyncError(async (req, res, next) => {
     temperature,
   } = techSpecs;
 
-  console.log(techSpecs);
+  // console.log(techSpecs);
 
   const tire = await dealerTiresSchema.create({
     brand: brand,
@@ -185,7 +185,7 @@ exports.dealerAddNewTire = catchAsyncError(async (req, res, next) => {
       temperature: temperature,
     },
   });
-  console.log(tire);
+  // console.log(tire);
 
   // Sending response
   res.status(201).json({
@@ -199,7 +199,7 @@ exports.dealerAddNewCustomer = catchAsyncError(async (req, res, next) => {
   const { firstName, lastName, phoneNumber, email, customerAddress, zipCode } =
     req.body;
 
-  console.log(req.body);
+  // console.log(req.body);
 
   // Create a new customer using the extracted data
   const customer = await DealerCustomerSchema.create({
@@ -273,7 +273,7 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       tags,
     });
 
-    console.log("New Vehicle : ", vehicle);
+    // console.log("New Vehicle : ", vehicle);
     res.status(201).json({
       status: "success",
       data: vehicle,
@@ -317,9 +317,9 @@ exports.dealerGetAllPartsByPage = catchAsyncError(async (req, res, next) => {
     .skip(skip)
     .limit(limit);
 
-  console.log(allParts);
+  // console.log(allParts);
 
-  console.log(allParts);
+  // console.log(allParts);
 
   res.status(200).json({
     status: "success",
@@ -389,7 +389,7 @@ exports.dealerGetAllTires = catchAsyncError(async (req, res, next) => {
     .populate("inventoryAndPrice")
     .populate("techSpecs");
 
-  console.log(allTires);
+  // console.log(allTires);
 
   res.status(200).json({
     status: "success",
@@ -504,7 +504,7 @@ exports.dealerGetAllVehiclesByPage = catchAsyncError(async (req, res, next) => {
 
 exports.dealerGetAllVehicles = catchAsyncError(async (req, res, next) => {
   const { customerId } = req.query; // Assuming the customerId is passed in the query
-  console.log(customerId);
+  // console.log(customerId);
 
   let allVehicles;
 
@@ -528,7 +528,7 @@ exports.dealerAddNewBrand = catchAsyncError(async (req, res, next) => {
   const brand = await partsBrandSchema.create({
     label: brandName,
   });
-  console.log(brand);
+  // console.log(brand);
 
   // Send back the response
   res.status(201).json({
@@ -549,10 +549,10 @@ exports.dealerGetAllBrands = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerAddNewVendor = catchAsyncError(async (req, res, next) => {
-  console.log(req.body);
+  // console.log(req.body);
 
   const vendor = await dealersVendorSchema.create(req.body);
-  console.log(vendor);
+  // console.log(vendor);
 
   // Send back the response
   res.status(201).json({
@@ -594,7 +594,7 @@ exports.dealerGetAllCategories = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerAddNewFees = catchAsyncError(async (req, res, next) => {
-  console.log("Request Body:", req.body);
+  // console.log("Request Body:", req.body);
   const fees = await dealerFeesSchema.create(req.body);
 
   // Send back the response
@@ -639,7 +639,7 @@ exports.createBlankEstimate = catchAsyncError(async (req, res, next) => {
 
   // Save the blank estimate document
   await newEstimate.save();
-  console.log(newEstimate);
+  // console.log(newEstimate);
   // Redirect user to edit page with the new estimate's ID
   res.status(201).json({
     success: true,
@@ -658,6 +658,9 @@ exports.updateEstimate = catchAsyncError(async (req, res, next) => {
   try {
     const { id } = req.params; // Get the estimate ID from the request URL
     const updateData = req.body; // Get the updated data from the request body
+    // console.log(updateData)
+    // console.log(updateData.services[0].labors)
+    
 
     // Sanitize input fields
     if (updateData.vehicle === "") {
@@ -674,6 +677,8 @@ exports.updateEstimate = catchAsyncError(async (req, res, next) => {
       { new: true }
     );
 
+    // console.log(updatedEstimate.services[0].labors)
+
     if (!updatedEstimate) {
       return res.status(404).json({
         success: false,
@@ -684,7 +689,7 @@ exports.updateEstimate = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Estimate updated successfully",
-      data: updatedEstimate, // Return the updated estimate
+      data: updatedEstimate, 
     });
   } catch (error) {
     console.error("Update Error:", error.message);
@@ -851,10 +856,10 @@ exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
 
   // Write the file to the server
   fs.writeFileSync(filePath, buffer);
-  console.log(allSelectedServices);
+  // console.log(allSelectedServices);
   // Update the status field of the estimate document
   const updates = allSelectedServices.map((service) => {
-    console.log(service);
+    // console.log(service);
     return {
       updateOne: {
         filter: { "services._id": service.serviceId },
@@ -897,7 +902,7 @@ exports.recordEstimatePayment = catchAsyncError(async (req, res, next) => {
     note,
     paymentMethod,
   } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
 
   try {
     // Fetch the existing estimate
@@ -969,7 +974,7 @@ exports.deletePart = async (req, res) => {
 
 exports.deleteTire = async (req, res) => {
   const { id } = req.params;
-  console.log("Delete Tire Id : ", id);
+  // console.log("Delete Tire Id : ", id);
   try {
     const tire = await dealerTiresSchema.findByIdAndDelete(id);
 
@@ -994,7 +999,7 @@ exports.deleteTire = async (req, res) => {
 
 exports.deleteFee = async (req, res) => {
   const { id } = req.params;
-  console.log("Delete Fee Id : ", id);
+  // console.log("Delete Fee Id : ", id);
   try {
     const fee = await FeesSchema.findByIdAndDelete(id);
 
@@ -1031,7 +1036,7 @@ exports.addNewAppointment = catchAsyncError(async (req, res, next) => {
     status,
   } = req.body;
 
-  console.log(req.body);
+  // console.log(req.body);
 
   const appointment = await appointmentSchema.create({
     customerId,
@@ -1056,7 +1061,7 @@ exports.addNewAppointment = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerGetAllAppointment = catchAsyncError(async (req, res, next) => {
-  console.log(req.body);
+  // console.log(req.body);
   const allAppointment = await appointmentSchema.find();
 
   res.status(200).json({
@@ -1081,8 +1086,8 @@ exports.updateAppointment = catchAsyncError(async (req, res, next) => {
 
   const { id } = req.params; // Extract appointment ID from the request parameters
 
-  console.log(`Updating appointment with ID: ${id}`);
-  console.log(req.body);
+  // console.log(`Updating appointment with ID: ${id}`);
+  // console.log(req.body);
 
   // Find the appointment by ID and update it
   const appointment = await appointmentSchema.findByIdAndUpdate(
@@ -1202,7 +1207,7 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
 exports.updateCustomerRemainingAmount = catchAsyncError(async (req, res) => {
   try {
     const { customerId, remainingAmount } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     const customer = await DealerCustomerSchema.findByIdAndUpdate(customerId);
 
     if (!customer) {
