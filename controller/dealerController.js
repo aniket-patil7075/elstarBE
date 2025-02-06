@@ -702,10 +702,12 @@ exports.updateEstimate = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllEstimatesByPage = catchAsyncError(async (req, res, next) => {
-  const { filterData, pageIndex, pageSize, sort } = req.query;
+  const { filterData, pageIndex, pageSize, sort } = req.body;
+  // console.log(pageIndex)
+  // console.log(req.body);
 
   // Default pagination values
-  const page = parseInt(pageIndex) || 1;
+  const page = parseInt(pageIndex) || 2;
   const limit = parseInt(pageSize) || 10;
   const skip = (page - 1) * limit;
 
