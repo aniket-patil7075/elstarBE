@@ -1180,6 +1180,7 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
       }
 
       dealerEstimate.grandTotal = session.amount_total / 100;
+      dealerEstimate.status ="Dropped Off";
       await dealerEstimate.save();
 
       const customer = await CustomerSchema.findById(customerId);
@@ -1194,6 +1195,8 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
 
       return res.json({
         status: session.payment_status,
+        id : dealerEstimate._id,
+        orderNo : orderNo,
         message: "Grand total updated successfully",
         grandTotal: dealerEstimate.grandTotal,
       });
