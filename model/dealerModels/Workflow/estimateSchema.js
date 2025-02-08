@@ -80,6 +80,11 @@ const dealerEstimateSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed,
         default: ''
     },
+    estimateFlag: {  
+        type: Number,
+        enum: [0, 1],  
+        default: 0
+    },
 
     services: [
         {

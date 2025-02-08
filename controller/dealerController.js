@@ -246,6 +246,8 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       tags,
     } = req.body;
 
+    console.log(licencePlate)
+
     // Handle image upload
     let imageName = null;
     if (req.file) {
@@ -1181,6 +1183,7 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
 
       dealerEstimate.grandTotal = session.amount_total / 100;
       dealerEstimate.status ="Dropped Off";
+
       await dealerEstimate.save();
 
       const customer = await CustomerSchema.findById(customerId);
@@ -1240,5 +1243,39 @@ exports.updateCustomerRemainingAmount = catchAsyncError(async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+  }
+});
+
+exports.deleteEstimate = catchAsyncError(async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("Estimate ID:", id);
+
+    const updatedEstimate = await estimateSchema.findByIdAndUpdate(
+      id,
+      { estimateFlag: 1 }, 
+      { new: true } 
+    );
+
+    if (!updatedEstimate) {
+      return res.status(404).json({
+        success: false,
+        message: "Estimate not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Estimate flag updated successfully",
+      data: updatedEstimate, 
+      
+    });
+  } catch (error) {
+    console.error("Update Error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update estimate flag",
+      error: error.message,
+    });
   }
 });

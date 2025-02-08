@@ -85,12 +85,6 @@ const dealerVehiclesSchema = new mongoose.Schema({
         plateNumber: {
             type: String,
             trim: true,
-            // validate: {
-            //     validator: (value) => {
-            //         return value.length === 10; // Assuming 10-character validation is needed
-            //     },
-            //     message: "License plate number must be exactly 10 characters long"
-            // }
         }
 
     }],
