@@ -349,6 +349,6 @@ router.route('/dealer/update-appointment/:id').put(updateAppointment)
 router.route('/create-checkout-session').post(stripePayment)
 router.route('/session-status').get(getStripePayment)
 router.route('/update-customer-remaining').put(updateCustomerRemainingAmount)
-router.route('/delete-estimate/:id').put(deleteEstimate)
+router.route('/dealer/workflow/delete-estimate/:id').put(deleteEstimate)
 
 module.exports = dealerRoutes;

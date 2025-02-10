@@ -718,14 +718,14 @@ exports.getAllEstimatesByPage = catchAsyncError(async (req, res, next) => {
   const sortOptions = sort ? { [sort]: 1 } : {};
 
   const allEstimates = await estimateSchema
-    .find()
+    .find({ estimateFlag: 0 })
     .populate({
       path: "customer",
-      match: { $ne: "" }, // Only populate if not empty string
+      match: { $ne: "" }, 
     })
     .populate({
       path: "vehicle",
-      match: { $ne: "" }, // Only populate if not empty string
+      match: { $ne: "" }, 
     })
     .sort(sortOptions)
     .skip(skip)
@@ -821,15 +821,21 @@ exports.updateEstimateDates = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerGetAllEstimates = catchAsyncError(async (req, res, next) => {
+  let filter = {}; 
+
+  if (req.query.estimateFlag === "0") {
+    filter.estimateFlag = 0; 
+  }
+
   let allEstimates = await estimateSchema
-    .find()
+    .find(filter) 
     .populate({
       path: "customer",
-      match: { $ne: "" }, // Only populate if not empty string
+      match: { $ne: "" }, 
     })
     .populate({
       path: "vehicle",
-      match: { $ne: "" }, // Only populate if not empty string
+      match: { $ne: "" }, 
     });
 
   res.status(200).json({
@@ -1249,7 +1255,7 @@ exports.updateCustomerRemainingAmount = catchAsyncError(async (req, res) => {
 exports.deleteEstimate = catchAsyncError(async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("Estimate ID:", id);
+    
 
     const updatedEstimate = await estimateSchema.findByIdAndUpdate(
       id,
