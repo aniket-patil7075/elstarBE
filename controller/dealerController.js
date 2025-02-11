@@ -246,7 +246,6 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       tags,
     } = req.body;
 
-    console.log(licencePlate)
 
     // Handle image upload
     let imageName = null;
@@ -828,7 +827,7 @@ exports.dealerGetAllEstimates = catchAsyncError(async (req, res, next) => {
   }
 
   let allEstimates = await estimateSchema
-    .find(filter) 
+    .find({ estimateFlag: 0 }) 
     .populate({
       path: "customer",
       match: { $ne: "" }, 
