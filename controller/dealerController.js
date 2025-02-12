@@ -1188,6 +1188,7 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
 
       dealerEstimate.grandTotal = session.amount_total / 100;
       dealerEstimate.status ="Dropped Off";
+      dealerEstimate.paymentMethod ="card";
 
       await dealerEstimate.save();
 
