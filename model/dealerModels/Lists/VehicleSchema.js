@@ -60,23 +60,7 @@ const dealerVehiclesSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-    // mileage: {
-    //     value: {
-    //         type: Number,
-    //         required: function() {
-    //             return !this.mileage.noVehicleOdometer;
-    //         }
-    //     },
-    //     distance: {
-    //         type: String,
-    //         enum: ['mi', 'km'],
-    //         default: 'mi'
-    //     },
-    //     noVehicleOdometer: {
-    //         type: Boolean,
-    //         default: false
-    //     }
-    // },
+   
     licencePlate: [{
         regionCode: {
             type: String,
