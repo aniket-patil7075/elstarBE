@@ -2,7 +2,7 @@ const catchAsyncError = require("../middleware/catchAsyncError");
 const generalSettingSchema = require("../model/dealerModels/generalSettingSchema");
 
 exports.addGeneralSetting = catchAsyncError(async (req, res, next) => {
-  // console.log("general setting : ", req.body);
+  
   const { fees, workAssignments, authorization, signature, mileage, lineItem } =
     req.body;
 
