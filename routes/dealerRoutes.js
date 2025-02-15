@@ -1,5 +1,6 @@
 const { sendEmailToUser } = require('../controller/controller');
 const { dealerAddNewPart, dealerAddNewCustomer, dealerGetAllParts, dealerGetAllCustomers, dealerAddNewBrand, dealerGetAllcategory, dealerAddNewVendor, dealerGetAllVendors, dealerAddNewCategory, dealerGetAllCategories, dealerGetAllBrands, dealerAddNewVehicle, dealerGetAllvehicles, dealerGetAllVehicles, dealerAddNewEstimate, dealerAddNewFees, dealerGetAllFees, createBlankEstimate, dealerGetAllPartsByPage, dealerGetAllVehiclesByPage, dealerGetAllCustomersByPage, dealerAddNewTire, dealerGetAllTires, dealerGetAllTiresByPage, updateEstimate, dealerGetAllEstimates, getEstimateById, getAllEstimatesByPage, updateOrderStatus, updateEstimateDates, authorizeEstimateServices, recordEstimatePayment, deletePart, deleteTire, deleteFee, addNewAppointment, dealerGetAllAppointment, updateAppointment, stripePayment, getStripePayment, updateCustomerRemainingAmount, deleteEstimate } = require('../controller/dealerController');
+const { addGeneralSetting } = require('../controller/generalSettingController');
 const router = require('./routes');
 
 const prefix = '/elstar-local';
@@ -351,5 +352,6 @@ router.route('/create-checkout-session').post(stripePayment)
 router.route('/session-status').get(getStripePayment)
 router.route('/update-customer-remaining').put(updateCustomerRemainingAmount)
 router.route('/dealer/workflow/delete-estimate/:id').put(deleteEstimate)
+router.route('/dealer/general-setting').post(addGeneralSetting)
 
 module.exports = dealerRoutes;

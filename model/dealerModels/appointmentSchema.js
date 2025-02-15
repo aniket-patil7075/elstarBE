@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const appointmentSchema = new mongoose.Schema({
     customerId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'DealerCustomer', // Assuming DealerCustomer model exists
+        ref: 'DealerCustomer', 
         required: [true, "Customer is required"]
     },
     start: {
