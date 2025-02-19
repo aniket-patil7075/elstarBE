@@ -1,8 +1,5 @@
 const ErrorHandler = require('../utils/errorHandler');
 
-
-
-
 exports.dealerAddNewBrand = catchAsyncError(async (req, res, next) => {
     const {
         brandName
