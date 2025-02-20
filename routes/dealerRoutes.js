@@ -1,5 +1,5 @@
 const { sendEmailToUser } = require('../controller/controller');
-const { dealerAddNewPart, dealerAddNewCustomer, dealerGetAllParts, dealerGetAllCustomers, dealerAddNewBrand, dealerGetAllcategory, dealerAddNewVendor, dealerGetAllVendors, dealerAddNewCategory, dealerGetAllCategories, dealerGetAllBrands, dealerAddNewVehicle, dealerGetAllvehicles, dealerGetAllVehicles, dealerAddNewEstimate, dealerAddNewFees, dealerGetAllFees, createBlankEstimate, dealerGetAllPartsByPage, dealerGetAllVehiclesByPage, dealerGetAllCustomersByPage, dealerAddNewTire, dealerGetAllTires, dealerGetAllTiresByPage, updateEstimate, dealerGetAllEstimates, getEstimateById, getAllEstimatesByPage, updateOrderStatus, updateEstimateDates, authorizeEstimateServices, recordEstimatePayment, deletePart, deleteTire, deleteFee, addNewAppointment, dealerGetAllAppointment, updateAppointment, stripePayment, getStripePayment, updateCustomerRemainingAmount, deleteEstimate } = require('../controller/dealerController');
+const { dealerAddNewPart, dealerAddNewCustomer, dealerGetAllParts, dealerGetAllCustomers, dealerAddNewBrand, dealerGetAllcategory, dealerAddNewVendor, dealerGetAllVendors, dealerAddNewCategory, dealerGetAllCategories, dealerGetAllBrands, dealerAddNewVehicle, dealerGetAllvehicles, dealerGetAllVehicles, dealerAddNewEstimate, dealerAddNewFees, dealerGetAllFees, createBlankEstimate, dealerGetAllPartsByPage, dealerGetAllVehiclesByPage, dealerGetAllCustomersByPage, dealerAddNewTire, dealerGetAllTires, dealerGetAllTiresByPage, updateEstimate, dealerGetAllEstimates, getEstimateById, getAllEstimatesByPage, updateOrderStatus, updateEstimateDates, authorizeEstimateServices, recordEstimatePayment, deletePart, deleteTire, deleteFee, addNewAppointment, dealerGetAllAppointment, updateAppointment, stripePayment, getStripePayment, updateCustomerRemainingAmount, deleteEstimate, dealerGetAllEstimatesWithoutFlag } = require('../controller/dealerController');
 const { addGeneralSetting } = require('../controller/generalSettingController');
 const router = require('./routes');
 
@@ -284,6 +284,11 @@ router.route('/dealer/workflow/all-estimates')
     // You can enable the authentication & authorization middleware for this
     // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
     .get(dealerGetAllEstimates);
+
+    router.route('/dealer/workflow/estimates')
+    // You can enable the authentication & authorization middleware for this
+    // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
+    .get(dealerGetAllEstimatesWithoutFlag);
 
 /**
 * @desc   Add New Estimate

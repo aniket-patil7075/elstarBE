@@ -843,6 +843,25 @@ exports.dealerGetAllEstimates = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.dealerGetAllEstimatesWithoutFlag = catchAsyncError(async (req, res, next) => {
+  let allEstimates = await estimateSchema
+    .find() 
+    .populate({
+      path: "customer",
+      match: { $ne: "" }, 
+    })
+    .populate({
+      path: "vehicle",
+      match: { $ne: "" }, 
+    });
+
+  res.status(200).json({
+    status: "success",
+    allEstimates,
+  });
+});
+
+
 exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
   const { estimateId, signature, allSelectedServices } = req.body; // Extract signature from request body
 
