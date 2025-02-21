@@ -270,8 +270,6 @@ router.route('/dealer/workflow/get-estimate/:id')
 * @access Public
 */
 router.route('/dealer/workflow/all-estimates-by-page')
-    // You can enable the authentication & authorization middleware for this
-    // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
     .post(getAllEstimatesByPage);
 
 
@@ -281,8 +279,7 @@ router.route('/dealer/workflow/all-estimates-by-page')
 * @access Public
 */
 router.route('/dealer/workflow/all-estimates')
-    // You can enable the authentication & authorization middleware for this
-    // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
+
     .get(dealerGetAllEstimates);
 
     router.route('/dealer/workflow/estimates')
