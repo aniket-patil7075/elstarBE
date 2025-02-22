@@ -1186,6 +1186,7 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
       req.query.session_id
     );
 
+
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
@@ -1208,6 +1209,8 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
       dealerEstimate.grandTotal = session.amount_total / 100;
       dealerEstimate.status ="Dropped Off";
       dealerEstimate.paymentMethod ="card";
+      dealerEstimate.remainingAmount=customerRemaining;
+      dealerEstimate.paymentDate = new Date().toISOString().split("T")[0];
 
       await dealerEstimate.save();
 

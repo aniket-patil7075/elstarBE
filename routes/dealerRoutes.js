@@ -249,8 +249,6 @@ router.route('/dealer/workflow/add-new-estimate')
 * @access Public
 */
 router.route('/dealer/workflow/update-estimate/:id')
-    // You can enable the authentication & authorization middleware for this
-    // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
     .put(updateEstimate);
 
 
@@ -260,8 +258,6 @@ router.route('/dealer/workflow/update-estimate/:id')
 * @access Public
 */
 router.route('/dealer/workflow/get-estimate/:id')
-    // You can enable the authentication & authorization middleware for this
-    // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
     .get(getEstimateById);
 
 /**
