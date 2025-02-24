@@ -159,6 +159,12 @@ const dealerTiresSchema = new mongoose.Schema({
             trim: true,
             maxlength: [10, "Temperature must be less than 10 characters."],
         },
+        
+    },
+    deleteFlag: {  
+        type: Number,
+        enum: [0, 1],  
+        default: 0
     },
 }, { timestamps: true });
 

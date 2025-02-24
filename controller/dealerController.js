@@ -303,7 +303,7 @@ exports.dealerGetAllPartsByPage = catchAsyncError(async (req, res, next) => {
   const page = pageIndex || 1;
   const limit = pageSize || 10;
   const skip = (page - 1) * limit;
-  let query = {};
+  let query = {deleteFlag: 0};
 
   // Sort option
   const sortOptions = sort ? { [sort]: 1 } : {}; // Sorting in ascending order if provided
@@ -332,7 +332,7 @@ exports.dealerGetAllPartsByPage = catchAsyncError(async (req, res, next) => {
 
 exports.dealerGetAllParts = catchAsyncError(async (req, res, next) => {
   let allParts = await dealerPartsSchema
-    .find()
+    .find({deleteFlag: 0})
     .populate("brand")
     .populate("category")
     .populate("vendor");
@@ -349,7 +349,7 @@ exports.dealerGetAllTiresByPage = catchAsyncError(async (req, res, next) => {
   const page = parseInt(pageIndex) || 1;
   const limit = parseInt(pageSize) || 10;
   const skip = (page - 1) * limit;
-  let query = {};
+  let query = {deleteFlag: 0};
 
   if (
     filterData?.dateOption !== "allTime" &&
@@ -386,7 +386,22 @@ exports.dealerGetAllTiresByPage = catchAsyncError(async (req, res, next) => {
 exports.dealerGetAllTires = catchAsyncError(async (req, res, next) => {
   // Fetching all tires without any filters
   let allTires = await dealerTiresSchema
-    .find()
+    .find({ deleteFlag: 0 })
+    .populate("inventoryAndPrice")
+    .populate("techSpecs");
+
+  // console.log(allTires);
+
+  res.status(200).json({
+    status: "success",
+    allTires,
+  });
+});
+
+exports.dealerGetAllDeletedTires = catchAsyncError(async (req, res, next) => {
+  // Fetching all tires without any filters
+  let allTires = await dealerTiresSchema
+    .find({ deleteFlag: 1 })
     .populate("inventoryAndPrice")
     .populate("techSpecs");
 
@@ -909,7 +924,7 @@ exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Signature image saved successfully",
-    url: `/uploads/signatures/${fileName}`, // Adjust if using a static server,
+    url: `/uploads/signatures/${fileName}`, 
     updatedEstimateStatus,
   });
   // } catch (error) {
@@ -978,33 +993,43 @@ exports.recordEstimatePayment = catchAsyncError(async (req, res, next) => {
 
 exports.deletePart = async (req, res) => {
   const { id } = req.params;
+
   try {
-    const part = await dealerPartsSchema.findByIdAndDelete(id);
+    const part = await dealerPartsSchema.findByIdAndUpdate(
+      id,
+      { deleteFlag: 1 }, 
+      { new: true } 
+    );
 
     if (!part) {
       return res.status(404).json({
-        message: "part not found",
+        message: "Part not found",
       });
     }
 
     return res.status(200).json({
-      message: "part deleted successfully",
+      message: "Part marked as deleted successfully",
       data: part,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      message: "Error in deleting part",
+      message: "Error in marking part as deleted",
       error: error.message,
     });
   }
 };
 
+
 exports.deleteTire = async (req, res) => {
   const { id } = req.params;
-  // console.log("Delete Tire Id : ", id);
+
   try {
-    const tire = await dealerTiresSchema.findByIdAndDelete(id);
+    const tire = await dealerTiresSchema.findByIdAndUpdate(
+      id,
+      { deleteFlag: 1 }, 
+      { new: true } 
+    );
 
     if (!tire) {
       return res.status(404).json({
@@ -1019,11 +1044,12 @@ exports.deleteTire = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      message: "Error in deleting Tire",
+      message: "Error in marking tire as deleted",
       error: error.message,
     });
   }
 };
+
 
 exports.deleteFee = async (req, res) => {
   const { id } = req.params;

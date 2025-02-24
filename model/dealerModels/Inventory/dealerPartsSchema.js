@@ -113,6 +113,11 @@ const dealerPartsSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'PartBrands'
     },
+    deleteFlag: {  
+        type: Number,
+        enum: [0, 1],  
+        default: 0
+    },
 },
 { timestamps: true })
 
