@@ -387,8 +387,6 @@ router
  */
 router
   .route("/dealer/workflow/record-payment")
-  // You can enable the authentication & authorization middleware for this
-  // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
   .post(recordEstimatePayment);
 
 router.route("/dealer/delete-part/:id").post(deletePart);
