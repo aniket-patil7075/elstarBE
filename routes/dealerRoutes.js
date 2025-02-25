@@ -44,6 +44,9 @@ const {
   deleteEstimate,
   dealerGetAllEstimatesWithoutFlag,
   dealerGetAllDeletedTires,
+  dealerGetAllDeletedParts,
+  dealerGetAllDeletedFees,
+  dealerGetAllDelaer,
 } = require("../controller/dealerController");
 const { addGeneralSetting } = require("../controller/generalSettingController");
 const router = require("./routes");
@@ -391,6 +394,8 @@ router
 router.route("/dealer/delete-part/:id").post(deletePart);
 router.route("/dealer/delete-tire/:id").post(deleteTire);
 router.route("/dealer/get-all-deleted-tires").get(dealerGetAllDeletedTires);
+router.route("/dealer/get-all-deleted-parts").get(dealerGetAllDeletedParts);
+router.route("/dealer/get-all-deleted-fees").get(dealerGetAllDeletedFees);
 router.route("/dealer/delete-fee/:id").post(deleteFee);
 router.route("/dealer/add-new-appointment").post(addNewAppointment);
 router.route("/dealer/get-all-appointment").get(dealerGetAllAppointment);

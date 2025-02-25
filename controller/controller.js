@@ -11,16 +11,12 @@ exports.getHomepage = async (req, res, next) => {
     })
 }
 
-
-
 exports.logOut = catchAsyncError(async (req, res, next) => {
     res.clearCookie('token')
     res.status(200).send({
         message: "Logged Out Successfully !"
     })
 })
-
-
 
 exports.userSignIn = catchAsyncError(async (req, res, next) => {
     const { username, password } = req.body;

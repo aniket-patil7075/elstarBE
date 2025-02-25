@@ -19,6 +19,11 @@ const dealerFeesSchema = new mongoose.Schema({
         type: Number,
         required: [true, "Amount is required"],
         trim: true,
-    }
+    },
+    deleteFlag: {  
+        type: Number,
+        enum: [0, 1],  
+        default: 0
+    },
 })
 module.exports = mongoose.model('Fees', dealerFeesSchema);

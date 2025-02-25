@@ -73,6 +73,11 @@ const dealerSchema = new mongoose.Schema({
     assignedToSuperAdmin: {
         type: String,
     },
+    deleteFlag: {  
+        type: Number,
+        enum: [0, 1],  
+        default: 0
+    },
 },
     { timestamps: true })
 

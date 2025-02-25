@@ -18,6 +18,7 @@ const { default: mongoose } = require("mongoose");
 const FeesSchema = require("../model/dealerModels/Lists/FeesSchema");
 const appointmentSchema = require("../model/dealerModels/appointmentSchema");
 const CustomerSchema = require("../model/dealerModels/Lists/CustomerSchema");
+const dealerSchema = require("../model/dealerSchema");
 const stripe = require("stripe")(
   "sk_test_51QcTfE2LkEUwrBDR8lgQu5QSkf6WksOqU4iYVjn8ZHw993njjib7YYkebhdQjwCEONYbhfv3m8IeMTuY2GRTU5Ho00w3KGiRA4"
 );
@@ -246,7 +247,6 @@ exports.dealerAddNewVehicle = catchAsyncError(async (req, res, next) => {
       tags,
     } = req.body;
 
-
     // Handle image upload
     let imageName = null;
     if (req.file) {
@@ -303,7 +303,7 @@ exports.dealerGetAllPartsByPage = catchAsyncError(async (req, res, next) => {
   const page = pageIndex || 1;
   const limit = pageSize || 10;
   const skip = (page - 1) * limit;
-  let query = {deleteFlag: 0};
+  let query = { deleteFlag: 0 };
 
   // Sort option
   const sortOptions = sort ? { [sort]: 1 } : {}; // Sorting in ascending order if provided
@@ -332,7 +332,20 @@ exports.dealerGetAllPartsByPage = catchAsyncError(async (req, res, next) => {
 
 exports.dealerGetAllParts = catchAsyncError(async (req, res, next) => {
   let allParts = await dealerPartsSchema
-    .find({deleteFlag: 0})
+    .find({ deleteFlag: 0 })
+    .populate("brand")
+    .populate("category")
+    .populate("vendor");
+
+  res.status(200).json({
+    status: "success",
+    allParts,
+  });
+});
+
+exports.dealerGetAllDeletedParts = catchAsyncError(async (req, res, next) => {
+  let allParts = await dealerPartsSchema
+    .find({ deleteFlag: 1 })
     .populate("brand")
     .populate("category")
     .populate("vendor");
@@ -349,7 +362,7 @@ exports.dealerGetAllTiresByPage = catchAsyncError(async (req, res, next) => {
   const page = parseInt(pageIndex) || 1;
   const limit = parseInt(pageSize) || 10;
   const skip = (page - 1) * limit;
-  let query = {deleteFlag: 0};
+  let query = { deleteFlag: 0 };
 
   if (
     filterData?.dateOption !== "allTime" &&
@@ -399,13 +412,10 @@ exports.dealerGetAllTires = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerGetAllDeletedTires = catchAsyncError(async (req, res, next) => {
-  // Fetching all tires without any filters
   let allTires = await dealerTiresSchema
     .find({ deleteFlag: 1 })
     .populate("inventoryAndPrice")
     .populate("techSpecs");
-
-  // console.log(allTires);
 
   res.status(200).json({
     status: "success",
@@ -623,7 +633,20 @@ exports.dealerAddNewFees = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerGetAllFees = catchAsyncError(async (req, res, next) => {
-  let allFees = await dealerFeesSchema.find().populate("category");
+  let allFees = await dealerFeesSchema
+    .find({ deleteFlag: 0 })
+    .populate("category");
+
+  res.status(200).json({
+    status: "success",
+    allFees,
+  });
+});
+
+exports.dealerGetAllDeletedFees = catchAsyncError(async (req, res, next) => {
+  let allFees = await dealerFeesSchema
+    .find({ deleteFlag: 1 })
+    .populate("category");
 
   res.status(200).json({
     status: "success",
@@ -676,7 +699,6 @@ exports.updateEstimate = catchAsyncError(async (req, res, next) => {
     const updateData = req.body; // Get the updated data from the request body
     // console.log(updateData)
     // console.log(updateData.services[0].labors)
-    
 
     // Sanitize input fields
     if (updateData.vehicle === "") {
@@ -705,7 +727,7 @@ exports.updateEstimate = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Estimate updated successfully",
-      data: updatedEstimate, 
+      data: updatedEstimate,
     });
   } catch (error) {
     console.error("Update Error:", error.message);
@@ -735,11 +757,11 @@ exports.getAllEstimatesByPage = catchAsyncError(async (req, res, next) => {
     .find({ estimateFlag: 0 })
     .populate({
       path: "customer",
-      match: { $ne: "" }, 
+      match: { $ne: "" },
     })
     .populate({
       path: "vehicle",
-      match: { $ne: "" }, 
+      match: { $ne: "" },
     })
     .sort(sortOptions)
     .skip(skip)
@@ -835,21 +857,21 @@ exports.updateEstimateDates = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerGetAllEstimates = catchAsyncError(async (req, res, next) => {
-  let filter = {}; 
+  let filter = {};
 
   if (req.query.estimateFlag === "0") {
-    filter.estimateFlag = 0; 
+    filter.estimateFlag = 0;
   }
 
   let allEstimates = await estimateSchema
-    .find({ estimateFlag: 0 }) 
+    .find({ estimateFlag: 0 })
     .populate({
       path: "customer",
-      match: { $ne: "" }, 
+      match: { $ne: "" },
     })
     .populate({
       path: "vehicle",
-      match: { $ne: "" }, 
+      match: { $ne: "" },
     });
 
   res.status(200).json({
@@ -858,24 +880,25 @@ exports.dealerGetAllEstimates = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.dealerGetAllEstimatesWithoutFlag = catchAsyncError(async (req, res, next) => {
-  let allEstimates = await estimateSchema
-    .find() 
-    .populate({
-      path: "customer",
-      match: { $ne: "" }, 
-    })
-    .populate({
-      path: "vehicle",
-      match: { $ne: "" }, 
+exports.dealerGetAllEstimatesWithoutFlag = catchAsyncError(
+  async (req, res, next) => {
+    let allEstimates = await estimateSchema
+      .find()
+      .populate({
+        path: "customer",
+        match: { $ne: "" },
+      })
+      .populate({
+        path: "vehicle",
+        match: { $ne: "" },
+      });
+
+    res.status(200).json({
+      status: "success",
+      allEstimates,
     });
-
-  res.status(200).json({
-    status: "success",
-    allEstimates,
-  });
-});
-
+  }
+);
 
 exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
   const { estimateId, signature, allSelectedServices } = req.body; // Extract signature from request body
@@ -924,7 +947,7 @@ exports.authorizeEstimateServices = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Signature image saved successfully",
-    url: `/uploads/signatures/${fileName}`, 
+    url: `/uploads/signatures/${fileName}`,
     updatedEstimateStatus,
   });
   // } catch (error) {
@@ -997,8 +1020,8 @@ exports.deletePart = async (req, res) => {
   try {
     const part = await dealerPartsSchema.findByIdAndUpdate(
       id,
-      { deleteFlag: 1 }, 
-      { new: true } 
+      { deleteFlag: 1 },
+      { new: true }
     );
 
     if (!part) {
@@ -1020,15 +1043,14 @@ exports.deletePart = async (req, res) => {
   }
 };
 
-
 exports.deleteTire = async (req, res) => {
   const { id } = req.params;
 
   try {
     const tire = await dealerTiresSchema.findByIdAndUpdate(
       id,
-      { deleteFlag: 1 }, 
-      { new: true } 
+      { deleteFlag: 1 },
+      { new: true }
     );
 
     if (!tire) {
@@ -1050,12 +1072,14 @@ exports.deleteTire = async (req, res) => {
   }
 };
 
-
 exports.deleteFee = async (req, res) => {
   const { id } = req.params;
-  // console.log("Delete Fee Id : ", id);
   try {
-    const fee = await FeesSchema.findByIdAndDelete(id);
+    const fee = await FeesSchema.findByIdAndUpdate(
+      id,
+      { deleteFlag: 1 },
+      { new: true }
+    );
 
     if (!fee) {
       return res.status(404).json({
@@ -1065,7 +1089,7 @@ exports.deleteFee = async (req, res) => {
 
     return res.status(200).json({
       message: "Fee deleted successfully",
-      data: tire,
+      data: fee,
     });
   } catch (error) {
     console.error(error);
@@ -1212,17 +1236,15 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
       req.query.session_id
     );
 
-
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
     const orderNo = session.metadata?.orderNo;
-    const customerRemaining = parseFloat(session.metadata?.formattedRemaining) || 0;
-    
+    const customerRemaining =
+      parseFloat(session.metadata?.formattedRemaining) || 0;
 
     if (session.payment_status === "paid") {
       const dealerEstimate = await estimateSchema.findOne({ orderNo: orderNo });
-      
 
       const customerId = dealerEstimate.customer.toString();
 
@@ -1233,9 +1255,9 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
       }
 
       dealerEstimate.grandTotal = session.amount_total / 100;
-      dealerEstimate.status ="Dropped Off";
-      dealerEstimate.paymentMethod ="card";
-      dealerEstimate.remainingAmount=customerRemaining;
+      dealerEstimate.status = "Dropped Off";
+      dealerEstimate.paymentMethod = "card";
+      dealerEstimate.remainingAmount = customerRemaining;
       dealerEstimate.paymentDate = new Date().toISOString().split("T")[0];
 
       await dealerEstimate.save();
@@ -1252,8 +1274,8 @@ exports.getStripePayment = catchAsyncError(async (req, res) => {
 
       return res.json({
         status: session.payment_status,
-        id : dealerEstimate._id,
-        orderNo : orderNo,
+        id: dealerEstimate._id,
+        orderNo: orderNo,
         message: "Grand total updated successfully",
         grandTotal: dealerEstimate.grandTotal,
       });
@@ -1281,7 +1303,7 @@ exports.updateCustomerRemainingAmount = catchAsyncError(async (req, res) => {
 
     // Calculate the new remainingAmount by adding the previous remainingAmount to the new remainingAmount
     const prevRemainingAmount = customer.remainingAmount || 0; // In case remainingAmount is not set yet
-    const updatedRemainingAmount =  remainingAmount;
+    const updatedRemainingAmount = remainingAmount;
 
     // Update the customer's remainingAmount
     const updatedCustomer = await DealerCustomerSchema.findByIdAndUpdate(
@@ -1303,12 +1325,11 @@ exports.updateCustomerRemainingAmount = catchAsyncError(async (req, res) => {
 exports.deleteEstimate = catchAsyncError(async (req, res) => {
   try {
     const { id } = req.params;
-    
 
     const updatedEstimate = await estimateSchema.findByIdAndUpdate(
       id,
-      { estimateFlag: 1 }, 
-      { new: true } 
+      { estimateFlag: 1 },
+      { new: true }
     );
 
     if (!updatedEstimate) {
@@ -1321,8 +1342,7 @@ exports.deleteEstimate = catchAsyncError(async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Estimate flag updated successfully",
-      data: updatedEstimate, 
-      
+      data: updatedEstimate,
     });
   } catch (error) {
     console.error("Update Error:", error.message);
