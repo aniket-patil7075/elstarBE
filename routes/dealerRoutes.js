@@ -50,6 +50,9 @@ const {
   addNewPricingMatrix,
   dealerGetAllPricingMatrix,
   updatePricingMatrix,
+  addNewLaborMatrix,
+  dealerGetAllLaborMatrix,
+  updateLaborMatrix,
 } = require("../controller/dealerController");
 const { addGeneralSetting } = require("../controller/generalSettingController");
 const router = require("./routes");
@@ -407,5 +410,8 @@ router.route("/dealer/general-setting").post(addGeneralSetting);
 router.route("/dealer/pricing-matrix").post(addNewPricingMatrix);
 router.route("/dealer/get-all-pricing-matrix").get(dealerGetAllPricingMatrix);
 router.route("/dealer/update-pricing-matrix/:id").put(updatePricingMatrix);
+router.route("/dealer/labor-matrix").post(addNewLaborMatrix);
+router.route("/dealer/get-all-labor-matrix").get(dealerGetAllLaborMatrix);
+router.route("/dealer/update-labor-matrix/:id").put(updateLaborMatrix);
 
 module.exports = dealerRoutes;

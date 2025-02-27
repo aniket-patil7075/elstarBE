@@ -20,6 +20,7 @@ const appointmentSchema = require("../model/dealerModels/appointmentSchema");
 const CustomerSchema = require("../model/dealerModels/Lists/CustomerSchema");
 const dealerSchema = require("../model/dealerSchema");
 const { default: Matrix } = require("../model/dealerModels/Matrix/pricingMatrixSchema");
+const { default: LaborMatrix } = require("../model/dealerModels/Matrix/laborMatrixSchema");
 const stripe = require("stripe")(
   "sk_test_51QcTfE2LkEUwrBDR8lgQu5QSkf6WksOqU4iYVjn8ZHw993njjib7YYkebhdQjwCEONYbhfv3m8IeMTuY2GRTU5Ho00w3KGiRA4"
 );
@@ -1402,5 +1403,56 @@ exports.updatePricingMatrix = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     updatedPricingMatrix,
+  });
+});
+
+
+exports.addNewLaborMatrix = catchAsyncError(async (req, res, next) => {
+  const { title, rows } = req.body;
+
+
+  const matrix = await LaborMatrix.create({
+    title: title,
+    rows: rows,
+    deleteFlag: 0, 
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      matrix,
+    },
+  });
+});
+
+exports.dealerGetAllLaborMatrix = catchAsyncError(async (req, res, next) => {
+  // console.log(req.body);
+  const allLaborMatrix = await LaborMatrix.find();
+
+  res.status(200).json({
+    status: "success",
+    allLaborMatrix,
+  });
+});
+
+exports.updateLaborMatrix = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+
+  const updatedLaborMatrix = await LaborMatrix.findByIdAndUpdate(id, updatedData, {
+    new: true, // Returns the updated document
+    runValidators: true, // Ensures validation rules are applied
+  });
+
+  if (!updatedLaborMatrix) {
+    return res.status(404).json({
+      status: "fail",
+      message: "Pricing matrix not found",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    updatedLaborMatrix,
   });
 });
