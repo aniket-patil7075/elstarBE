@@ -19,6 +19,7 @@ const FeesSchema = require("../model/dealerModels/Lists/FeesSchema");
 const appointmentSchema = require("../model/dealerModels/appointmentSchema");
 const CustomerSchema = require("../model/dealerModels/Lists/CustomerSchema");
 const dealerSchema = require("../model/dealerSchema");
+const { default: Matrix } = require("../model/dealerModels/Matrix/pricingMatrixSchema");
 const stripe = require("stripe")(
   "sk_test_51QcTfE2LkEUwrBDR8lgQu5QSkf6WksOqU4iYVjn8ZHw993njjib7YYkebhdQjwCEONYbhfv3m8IeMTuY2GRTU5Ho00w3KGiRA4"
 );
@@ -1352,4 +1353,54 @@ exports.deleteEstimate = catchAsyncError(async (req, res) => {
       error: error.message,
     });
   }
+});
+
+exports.addNewPricingMatrix = catchAsyncError(async (req, res, next) => {
+  const { title, rows } = req.body;
+
+
+  const matrix = await Matrix.create({
+    title: title,
+    rows: rows,
+    deleteFlag: 0, 
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      matrix,
+    },
+  });
+});
+
+exports.dealerGetAllPricingMatrix = catchAsyncError(async (req, res, next) => {
+  // console.log(req.body);
+  const allPricingMatrix = await Matrix.find();
+
+  res.status(200).json({
+    status: "success",
+    allPricingMatrix,
+  });
+});
+
+exports.updatePricingMatrix = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+
+  const updatedPricingMatrix = await Matrix.findByIdAndUpdate(id, updatedData, {
+    new: true, // Returns the updated document
+    runValidators: true, // Ensures validation rules are applied
+  });
+
+  if (!updatedPricingMatrix) {
+    return res.status(404).json({
+      status: "fail",
+      message: "Pricing matrix not found",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    updatedPricingMatrix,
+  });
 });

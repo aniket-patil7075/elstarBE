@@ -47,6 +47,9 @@ const {
   dealerGetAllDeletedParts,
   dealerGetAllDeletedFees,
   dealerGetAllDelaer,
+  addNewPricingMatrix,
+  dealerGetAllPricingMatrix,
+  updatePricingMatrix,
 } = require("../controller/dealerController");
 const { addGeneralSetting } = require("../controller/generalSettingController");
 const router = require("./routes");
@@ -385,9 +388,7 @@ router
  * @route  POST /dealer/workflow/add-new-estimate
  * @access Public
  */
-router
-  .route("/dealer/workflow/record-payment")
-  .post(recordEstimatePayment);
+router.route("/dealer/workflow/record-payment").post(recordEstimatePayment);
 
 router.route("/dealer/delete-part/:id").post(deletePart);
 router.route("/dealer/delete-tire/:id").post(deleteTire);
@@ -403,5 +404,8 @@ router.route("/session-status").get(getStripePayment);
 router.route("/update-customer-remaining").put(updateCustomerRemainingAmount);
 router.route("/dealer/workflow/delete-estimate/:id").put(deleteEstimate);
 router.route("/dealer/general-setting").post(addGeneralSetting);
+router.route("/dealer/pricing-matrix").post(addNewPricingMatrix);
+router.route("/dealer/get-all-pricing-matrix").get(dealerGetAllPricingMatrix);
+router.route("/dealer/update-pricing-matrix/:id").put(updatePricingMatrix);
 
 module.exports = dealerRoutes;
