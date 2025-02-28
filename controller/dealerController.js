@@ -1406,6 +1406,60 @@ exports.updatePricingMatrix = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.deletePricingFlags = catchAsyncError(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Validate if id is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid ID format",
+      });
+    }
+
+    // 1. Check if the ID belongs to a LaborMatrix document
+    let updatedPricingMatrix = await Matrix.findByIdAndUpdate(
+      id,
+      { deleteFlag: 1 },
+      { new: true }
+    );
+
+    if (updatedPricingMatrix) {
+      return res.status(200).json({
+        status: "success",
+        message: "Matrix deleted successfully",
+        data: updatedPricingMatrix,
+      });
+    }
+
+    // 2. If not found, check inside rows and update rowDeleteFlag
+    updatedPricingMatrix = await Matrix.findOneAndUpdate(
+      { "rows._id": id },
+      { $set: { "rows.$.rowDeleteFlag": 1 } },
+      { new: true }
+    );
+
+    if (updatedPricingMatrix) {
+      return res.status(200).json({
+        status: "success",
+        message: "Row deleted successfully",
+        data: updatedPricingMatrix,
+      });
+    }
+
+    // If ID is not found in both cases
+    return res.status(404).json({
+      status: "fail",
+      message: "ID not found in Matrix or Rows",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message || "Internal Server Error",
+    });
+  }
+});
 
 exports.addNewLaborMatrix = catchAsyncError(async (req, res, next) => {
   const { title, rows } = req.body;
@@ -1455,4 +1509,59 @@ exports.updateLaborMatrix = catchAsyncError(async (req, res, next) => {
     status: "success",
     updatedLaborMatrix,
   });
+});
+
+exports.deleteLaborFlags = catchAsyncError(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Validate if id is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid ID format",
+      });
+    }
+
+    // 1. Check if the ID belongs to a LaborMatrix document
+    let updatedLaborMatrix = await LaborMatrix.findByIdAndUpdate(
+      id,
+      { deleteFlag: 1 },
+      { new: true }
+    );
+
+    if (updatedLaborMatrix) {
+      return res.status(200).json({
+        status: "success",
+        message: "Matrix deleted successfully",
+        data: updatedLaborMatrix,
+      });
+    }
+
+    // 2. If not found, check inside rows and update rowDeleteFlag
+    updatedLaborMatrix = await LaborMatrix.findOneAndUpdate(
+      { "rows._id": id },
+      { $set: { "rows.$.rowDeleteFlag": 1 } },
+      { new: true }
+    );
+
+    if (updatedLaborMatrix) {
+      return res.status(200).json({
+        status: "success",
+        message: "Row deleted successfully",
+        data: updatedLaborMatrix,
+      });
+    }
+
+    // If ID is not found in both cases
+    return res.status(404).json({
+      status: "fail",
+      message: "ID not found in Matrix or Rows",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message || "Internal Server Error",
+    });
+  }
 });
