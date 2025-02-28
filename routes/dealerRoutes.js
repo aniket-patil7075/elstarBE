@@ -56,12 +56,12 @@ const {
   deleteLaborFlags,
   deletePricingFlags,
 } = require("../controller/dealerController");
-const { addGeneralSetting } = require("../controller/generalSettingController");
-const router = require("./routes");
+const { addGeneralSetting } = require('../controller/generalSettingController');
+const router = require('./routes');
 
-const prefix = "/elstar-local";
+const prefix = '/elstar-local';
 
-const dealerRoutes = require("express").Router();
+const dealerRoutes = require('express').Router();
 
 /**
  * @desc   Dealer Add New Part
