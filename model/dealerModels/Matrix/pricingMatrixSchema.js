@@ -16,5 +16,4 @@ const matrixSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Matrix = mongoose.model("Matrix", matrixSchema);
-export default Matrix;
+module.exports = mongoose.model("Matrix", matrixSchema);

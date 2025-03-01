@@ -16,6 +16,5 @@ const laborMatrixSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const LaborMatrix = mongoose.model("LaborMatrix", laborMatrixSchema);
+module.exports = mongoose.model("LaborMatrix", laborMatrixSchema);
 
-export default LaborMatrix;
