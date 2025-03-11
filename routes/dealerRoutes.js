@@ -55,6 +55,8 @@ const {
   updateLaborMatrix,
   deleteLaborFlags,
   deletePricingFlags,
+  addNewGeneralRate,
+  dealerGetAllGeneralRate,
 } = require("../controller/dealerController");
 const { addGeneralSetting } = require('../controller/generalSettingController');
 const router = require('./routes');
@@ -417,6 +419,7 @@ router.route("/dealer/get-all-labor-matrix").get(dealerGetAllLaborMatrix);
 router.route("/dealer/update-labor-matrix/:id").put(updateLaborMatrix);
 router.route("/dealer/delete-labor-matrix/:id").put(deleteLaborFlags);
 router.route("/dealer/delete-pricing-matrix/:id").put(deletePricingFlags);
-
+router.route("/dealer/add-general-rate").post(addNewGeneralRate);
+router.route("/dealer/get-all-general-rate").get(dealerGetAllGeneralRate);
 
 module.exports = dealerRoutes;

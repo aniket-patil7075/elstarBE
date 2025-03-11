@@ -19,8 +19,13 @@ const FeesSchema = require("../model/dealerModels/Lists/FeesSchema");
 const appointmentSchema = require("../model/dealerModels/appointmentSchema");
 const CustomerSchema = require("../model/dealerModels/Lists/CustomerSchema");
 const dealerSchema = require("../model/dealerSchema");
-const { default: Matrix } = require("../model/dealerModels/Matrix/pricingMatrixSchema");
-const { default: LaborMatrix } = require("../model/dealerModels/Matrix/laborMatrixSchema");
+const {
+  default: Matrix,
+} = require("../model/dealerModels/Matrix/pricingMatrixSchema");
+const {
+  default: LaborMatrix,
+} = require("../model/dealerModels/Matrix/laborMatrixSchema");
+const generalRateSchema = require("../model/dealerModels/Inventory/generalRateSchema");
 const stripe = require("stripe")(
   "sk_test_51QcTfE2LkEUwrBDR8lgQu5QSkf6WksOqU4iYVjn8ZHw993njjib7YYkebhdQjwCEONYbhfv3m8IeMTuY2GRTU5Ho00w3KGiRA4"
 );
@@ -1359,11 +1364,10 @@ exports.deleteEstimate = catchAsyncError(async (req, res) => {
 exports.addNewPricingMatrix = catchAsyncError(async (req, res, next) => {
   const { title, rows } = req.body;
 
-
   const matrix = await Matrix.create({
     title: title,
     rows: rows,
-    deleteFlag: 0, 
+    deleteFlag: 0,
   });
 
   res.status(201).json({
@@ -1464,11 +1468,10 @@ exports.deletePricingFlags = catchAsyncError(async (req, res, next) => {
 exports.addNewLaborMatrix = catchAsyncError(async (req, res, next) => {
   const { title, rows } = req.body;
 
-
   const matrix = await LaborMatrix.create({
     title: title,
     rows: rows,
-    deleteFlag: 0, 
+    deleteFlag: 0,
   });
 
   res.status(201).json({
@@ -1493,10 +1496,14 @@ exports.updateLaborMatrix = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const updatedData = req.body;
 
-  const updatedLaborMatrix = await LaborMatrix.findByIdAndUpdate(id, updatedData, {
-    new: true, // Returns the updated document
-    runValidators: true, // Ensures validation rules are applied
-  });
+  const updatedLaborMatrix = await LaborMatrix.findByIdAndUpdate(
+    id,
+    updatedData,
+    {
+      new: true, // Returns the updated document
+      runValidators: true, // Ensures validation rules are applied
+    }
+  );
 
   if (!updatedLaborMatrix) {
     return res.status(404).json({
@@ -1564,4 +1571,25 @@ exports.deleteLaborFlags = catchAsyncError(async (req, res, next) => {
       message: error.message || "Internal Server Error",
     });
   }
+});
+
+exports.addNewGeneralRate = catchAsyncError(async (req, res, next) => {
+  const { rateName, rate } = req.body;
+
+  const newRate = await generalRateSchema.create({ rateName, rate });
+
+  res.status(201).json({
+    status: "success",
+    data: newRate,
+  });
+});
+
+exports.dealerGetAllGeneralRate = catchAsyncError(async (req, res, next) => {
+  // console.log(req.body);
+  const allGeneralRate = await generalRateSchema.find();
+
+  res.status(200).json({
+    status: "success",
+    allGeneralRate,
+  });
 });
