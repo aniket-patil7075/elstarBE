@@ -438,7 +438,9 @@ exports.dealerGetAllCustomersByPage = catchAsyncError(
     const page = pageIndex || 1;
     const limit = pageSize || 10;
     const skip = (page - 1) * limit;
-    let query = {};
+
+    // Initialize query with deleteFlag condition
+    let query = { deleteFlag: 0 };
 
     // Apply date filter if dateOption is not "All"
     if (filterData.dateOption !== "All" && filterData.dateOption !== "") {
@@ -477,6 +479,7 @@ exports.dealerGetAllCustomersByPage = catchAsyncError(
   }
 );
 
+
 exports.dealerGetAllCustomers = catchAsyncError(async (req, res, next) => {
   const allCustomers = await DealerCustomerSchema.find().populate("vehicle");
 
@@ -493,7 +496,7 @@ exports.dealerGetAllVehiclesByPage = catchAsyncError(async (req, res, next) => {
   const page = parseInt(pageIndex) || 1;
   const limit = parseInt(pageSize) || 10;
   const skip = (page - 1) * limit;
-  let query = {};
+  let query = {deleteFlag: 0 };
 
   // Apply date filter if dateOption is not "All"
   // Update your backend controller:
@@ -597,7 +600,7 @@ exports.dealerAddNewVendor = catchAsyncError(async (req, res, next) => {
 });
 
 exports.dealerGetAllVendors = catchAsyncError(async (req, res, next) => {
-  let allVendors = await dealersVendorSchema.find({});
+  let allVendors = await dealersVendorSchema.find({ deleteFlag: 0 });
 
   res.status(200).json({
     status: "success",
@@ -1593,3 +1596,91 @@ exports.dealerGetAllGeneralRate = catchAsyncError(async (req, res, next) => {
     allGeneralRate,
   });
 });
+
+exports.deleteCustomer = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const customer = await DealerCustomerSchema.findByIdAndUpdate(
+      id,
+      { deleteFlag: 1 },
+      { new: true }
+    );
+
+    if (!customer) {
+      return res.status(404).json({
+        message: "Customer not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Customer marked as deleted successfully",
+      data: customer,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Error in marking customer as deleted",
+      error: error.message,
+    });
+  }
+};
+
+exports.deleteVehicle = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const vehicle = await DealerVehicleSchema.findByIdAndUpdate(
+      id,
+      { deleteFlag: 1 },
+      { new: true }
+    );
+
+    if (!vehicle) {
+      return res.status(404).json({
+        message: "Vehicle not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Vehicle marked as deleted successfully",
+      data: vehicle,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Error in marking vehicle as deleted",
+      error: error.message,
+    });
+  }
+};
+
+
+exports.deleteVendor = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const vendor = await dealersVendorSchema.findByIdAndUpdate(
+      id,
+      { deleteFlag: 1 },
+      { new: true }
+    );
+
+    if (!vendor) {
+      return res.status(404).json({
+        message: "Vendor not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Vendor marked as deleted successfully",
+      data: vendor,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Error in marking vehicle as deleted",
+      error: error.message,
+    });
+  }
+};

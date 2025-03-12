@@ -122,6 +122,11 @@ const dealerCustomersSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    deleteFlag: {
+      type: Number,
+      enum: [0, 1],
+      default: 0,
+    },
   },
   { timestamps: true }
 );

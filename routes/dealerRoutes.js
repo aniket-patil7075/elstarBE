@@ -57,6 +57,9 @@ const {
   deletePricingFlags,
   addNewGeneralRate,
   dealerGetAllGeneralRate,
+  deleteCustomer,
+  deleteVehicle,
+  deleteVendor,
 } = require("../controller/dealerController");
 const { addGeneralSetting } = require('../controller/generalSettingController');
 const router = require('./routes');
@@ -421,5 +424,8 @@ router.route("/dealer/delete-labor-matrix/:id").put(deleteLaborFlags);
 router.route("/dealer/delete-pricing-matrix/:id").put(deletePricingFlags);
 router.route("/dealer/add-general-rate").post(addNewGeneralRate);
 router.route("/dealer/get-all-general-rate").get(dealerGetAllGeneralRate);
+router.route("/dealer/delete-customer/:id").post(deleteCustomer);
+router.route("/dealer/delete-vehicle/:id").post(deleteVehicle);
+router.route("/dealer/delete-vendor/:id").post(deleteVendor);
 
 module.exports = dealerRoutes;

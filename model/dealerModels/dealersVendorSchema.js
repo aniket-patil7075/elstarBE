@@ -75,7 +75,12 @@ const dealersVendorSchema = new mongoose.Schema({
             trim: true,
             maxlength: [50, "Email must be less than 50 characters."],
         }
-    }
+    },
+    deleteFlag: {
+        type: Number,
+        enum: [0, 1],
+        default: 0,
+      },
 })
 
 module.exports = mongoose.model('DealersVendor', dealersVendorSchema);
