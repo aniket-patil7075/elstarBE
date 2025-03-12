@@ -141,8 +141,6 @@ router
  */
 router
   .route("/dealer/get-all-tires-pagination")
-  // You can enable the authentication & authorization middleware for this
-  // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
   .post(dealerGetAllTiresByPage);
 
 /**
@@ -152,8 +150,6 @@ router
  */
 router
   .route("/dealer/add-new-customer")
-  // You can enable the authentication & authorization middleware for this
-  // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
   .post(dealerAddNewCustomer);
 
 /**
@@ -163,8 +159,6 @@ router
  */
 router
   .route("/dealer/get-all-customers-pagination")
-  // You can enable the authentication & authorization middleware for this
-  // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
   .post(dealerGetAllCustomersByPage);
 
 /**

@@ -481,7 +481,7 @@ exports.dealerGetAllCustomersByPage = catchAsyncError(
 
 
 exports.dealerGetAllCustomers = catchAsyncError(async (req, res, next) => {
-  const allCustomers = await DealerCustomerSchema.find().populate("vehicle");
+  const allCustomers = await DealerCustomerSchema.find({deleteFlag: 0 }).populate("vehicle");
 
   res.status(200).json({
     status: "success",
