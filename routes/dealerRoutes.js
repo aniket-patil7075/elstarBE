@@ -339,8 +339,6 @@ router
 
 router
   .route("/dealer/workflow/estimates")
-  // You can enable the authentication & authorization middleware for this
-  // .post(isAuthenticatedUser, isAuthorizedRole("superAdmin"), superAdminCreateDealer);
   .get(dealerGetAllEstimatesWithoutFlag);
 
 /**
