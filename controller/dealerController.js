@@ -546,10 +546,10 @@ exports.dealerGetAllVehicles = catchAsyncError(async (req, res, next) => {
 
   if (customerId) {
     // If customerId is provided, find vehicles specific to that customer
-    allVehicles = await DealerVehicleSchema.find({ customerId });
+    allVehicles = await DealerVehicleSchema.find({ customerId,deleteFlag: 0 });
   } else {
     // If no customerId is provided, return all vehicles
-    allVehicles = await DealerVehicleSchema.find();
+    allVehicles = await DealerVehicleSchema.find({deleteFlag: 0 });
   }
 
   res.status(200).json({
