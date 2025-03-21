@@ -60,6 +60,7 @@ const {
   deleteCustomer,
   deleteVehicle,
   deleteVendor,
+  updateGeneralRate,
 } = require("../controller/dealerController");
 const { addGeneralSetting } = require('../controller/generalSettingController');
 const router = require('./routes');
@@ -419,5 +420,6 @@ router.route("/dealer/get-all-general-rate").get(dealerGetAllGeneralRate);
 router.route("/dealer/delete-customer/:id").post(deleteCustomer);
 router.route("/dealer/delete-vehicle/:id").post(deleteVehicle);
 router.route("/dealer/delete-vendor/:id").post(deleteVendor);
+router.route("/dealer/update-general-rate/:id").put(updateGeneralRate);
 
 module.exports = dealerRoutes;

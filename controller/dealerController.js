@@ -1684,3 +1684,33 @@ exports.deleteVendor = async (req, res) => {
     });
   }
 };
+
+
+exports.updateGeneralRate = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+
+  console.log("id : ", id)
+  console.log("updated data : ", updatedData)
+
+  const updatedGeneralRate = await generalRateSchema.findByIdAndUpdate(
+    id,
+    updatedData,
+    {
+      new: true,
+      runValidators: true, 
+    }
+  );
+
+  if (!updatedGeneralRate) {
+    return res.status(404).json({
+      status: "fail",
+      message: "General rate not found",
+    });
+  }
+
+  res.status(200).json({
+    status: "success",
+    updatedGeneralRate,
+  });
+});
